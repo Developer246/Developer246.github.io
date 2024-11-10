@@ -27,28 +27,57 @@
 
         h1 {
             margin: 0;
-            font-size: 5vw; /* Tamaño de fuente flexible */
         }
 
         p {
-            max-width: 90%;
+            max-width: 600px;
             text-align: center;
             padding: 20px;
             background-color: #333; /* Fondo gris oscuro para contraste */
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin: 20px 0;
-            font-size: 4vw; /* Tamaño de fuente flexible */
         }
 
         iframe {
             border: 0;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            height: 50vh; /* Altura del iFrame basada en el alto de la ventana */
-            max-width: 640px; /* Tamaño máximo */
-            max-height: 480px; /* Tamaño máximo */
+        }
+
+        /* Media query para pantallas pequeñas */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 6vw; /* Tamaño de fuente flexible para móviles */
+            }
+
+            p {
+                font-size: 4vw; /* Tamaño de fuente flexible para móviles */
+                max-width: 90%;
+            }
+
+            iframe {
+                width: 90%;
+                height: 50vh; /* Altura del iFrame basada en el alto de la ventana */
+                max-width: 640px; /* Tamaño máximo */
+                max-height: 480px; /* Tamaño máximo */
+            }
+        }
+
+        /* Estilos para pantallas de escritorio */
+        @media (min-width: 601px) {
+            h1 {
+                font-size: 36px; /* Tamaño de fuente fijo para escritorio */
+            }
+
+            p {
+                font-size: 18px; /* Tamaño de fuente fijo para escritorio */
+            }
+
+            iframe {
+                width: 640px; /* Ancho fijo para escritorio */
+                height: 480px; /* Altura fija para escritorio */
+            }
         }
     </style>
 </head>
