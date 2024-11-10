@@ -27,22 +27,28 @@
 
         h1 {
             margin: 0;
+            font-size: 5vw; /* Tamaño de fuente flexible */
         }
 
         p {
-            max-width: 600px;
+            max-width: 90%;
             text-align: center;
             padding: 20px;
             background-color: #333; /* Fondo gris oscuro para contraste */
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin: 20px 0;
+            font-size: 4vw; /* Tamaño de fuente flexible */
         }
 
         iframe {
             border: 0;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            height: 50vh; /* Altura del iFrame basada en el alto de la ventana */
+            max-width: 640px; /* Tamaño máximo */
+            max-height: 480px; /* Tamaño máximo */
         }
     </style>
 </head>
@@ -55,8 +61,6 @@
         Este mapa fue asignado por el profesor:<br>
         Marcos Aldair Sánchez Caballero.</strong>
     </p>
-    <iframe src="https://www.google.com/maps/d/u/0/embed?mid=11rvOXFVALbYgRr_ZM_Ekpj34Mo5QA5Y&ehbc=2E312F" width="640" height="480"></iframe>
+    <iframe src="https://www.google.com/maps/d/u/0/embed?mid=11rvOXFVALbYgRr_ZM_Ekpj34Mo5QA5Y&ehbc=2E312F"></iframe>
 </body>
-</html>
-
 </html>
