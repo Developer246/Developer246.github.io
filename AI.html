@@ -88,15 +88,15 @@
     </main>
     <script>
         const messagesContainer = document.getElementById('messages');
-        const apiKey = '59314993076CD46EE52AFC0713AE3C5C'; // Reemplaza con tu clave de API de Bing Search
+        const apiKey = '59314993076CD46EE52AFC0713AE3C5C';
 
-        function sendMessage() {
+        async function sendMessage() {
             const userInput = document.getElementById('userInput');
             const userMessage = userInput.value;
 
             if (userMessage.trim() !== '') {
                 appendMessage('user', userMessage);
-                getBotResponse(userMessage);
+                await getBotResponse(userMessage);
                 userInput.value = '';
             }
         }
