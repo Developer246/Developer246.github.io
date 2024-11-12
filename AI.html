@@ -87,7 +87,7 @@
     </main>
     <script>
         const messagesContainer = document.getElementById('messages');
-        const apiKey = "TU_CLAVE_DE_API_DE_OPENAI"; // Reemplaza con tu clave de API de OpenAI
+        const apiKey = "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"; // Reemplaza con tu clave de API de OpenAI
 
         async function sendMessage() {
             const userInput = document.getElementById('userInput');
@@ -110,13 +110,14 @@
 
         async function getBotResponse(message) {
             try {
-                const response = await fetch('https://api.openai.com/v1/engines/gpt-4/completions', {
+                const response = await fetch('https://api.openai.com/v1/completions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
+                        model: "text-davinci-004",
                         prompt: message,
                         max_tokens: 150,
                         n: 1,
