@@ -88,8 +88,6 @@
     <script>
         const messagesContainer = document.getElementById('messages');
 
-        const apiKey = "cf6d18b81bmsh86954cd73ff1ae3p10e47ajsn87ba87763502"; // Reemplaza con tu clave de API de RapidAPI
-
         async function sendMessage() {
             const userInput = document.getElementById('userInput');
             const userMessage = userInput.value;
@@ -111,28 +109,28 @@
 
         async function getBotResponse(message) {
             try {
-                const response = await fetch(`https://bing-web-search1.p.rapidapi.com/search?q=${encodeURIComponent(message)}`, {
+                const response = await fetch('http://127.0.0.1:5000/search', {
+                    method: 'POST',
                     headers: {
-                        'X-RapidAPI-Key': apiKey,
-                        'X-RapidAPI-Host': 'bing-web-search1.p.rapidapi.com'
-                    }
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: message })
                 });
                 const data = await response.json();
 
-                // Depuración: Mostrar datos en consola
+                // Mostrar resultados en consola
                 console.log(data);
 
-                if (data.webPages && data.webPages.value && data.webPages.value.length > 0) {
-                    appendMessage('bot', data.webPages.value[0].snippet);
+                if (data.length > 0) {
+                    appendMessage('bot', data[0].snippet);
                 } else {
                     appendMessage('bot', 'Lo siento, no pude encontrar información relevante.');
                 }
             } catch (error) {
-                console.error('Error fetching data from RapidAPI:', error);
+                console.error('Error fetching data:', error);
                 appendMessage('bot', 'Hubo un error al intentar buscar la información. Inténtalo de nuevo más tarde.');
             }
         }
     </script>
 </body>
 </html>
-
