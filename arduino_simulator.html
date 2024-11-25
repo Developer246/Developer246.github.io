@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Circuitos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #board {
+      margin: 20px auto;
+      width: 600px;
+      height: 400px;
+      background-color: #ffffff;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      position: relative;
+    }
+    .component {
+      position: absolute;
+    }
+    .led {
+      width: 40px;
+      height: 40px;
+      background-color: grey;
+      border-radius: 50%;
+      top: 100px;
+      left: 150px;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    .led.on {
+      background-color: red;
+      box-shadow: 0 0 20px red;
+    }
+    .button {
+      width: 60px;
+      height: 30px;
+      background-color: #007bff;
+      border-radius: 5px;
+      top: 200px;
+      left: 150px;
+      text-align: center;
+      line-height: 30px;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+    }
+    .button:active {
+      background-color: #0056b3;
+    }
+    #code-area {
+      margin: 20px auto;
+      width: 80%;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulador de Circuitos - Arduino Básico</h1>
+  <div id="board">
+    <div class="led component" id="led"></div>
+    <div class="button component" id="button">Pulsar</div>
+  </div>
+  <div id="code-area">
+    <h3>Escribe tu código (JavaScript para simular lógica Arduino):</h3>
+    <textarea id="code">/* Escribe aquí tu código */\nfunction loop() {\n  if (buttonPressed) {\n    turnOnLED();\n  } else {\n    turnOffLED();\n  }\n}</textarea>
+    <button onclick="runSimulation()">Ejecutar Simulación</button>
+    <button onclick="stopSimulation()">Detener Simulación</button>
+  </div>
+
+  <script>
+    let led = document.getElementById("led");
+    let button = document.getElementById("button");
+    let buttonPressed = false;
+    let simulationInterval;
+
+    // Funciones para controlar el LED
+    function turnOnLED() {
+      led.classList.add("on");
+    }
+
+    function turnOffLED() {
+      led.classList.remove("on");
+    }
+
+    // Evento para el botón
+    button.addEventListener("mousedown", () => {
+      buttonPressed = true;
+    });
+    button.addEventListener("mouseup", () => {
+      buttonPressed = false;
+    });
+
+    // Ejecutar simulación
+    function runSimulation() {
+      stopSimulation(); // Detener cualquier simulación previa
+      let userCode = new Function("buttonPressed", "turnOnLED", "turnOffLED", document.getElementById("code").value);
+      simulationInterval = setInterval(() => {
+        try {
+          userCode(buttonPressed, turnOnLED, turnOffLED);
+        } catch (error) {
+          alert("Error en el código: " + error.message);
+          stopSimulation();
+        }
+      }, 100);
+    }
+
+    // Detener simulación
+    function stopSimulation() {
+      clearInterval(simulationInterval);
+      simulationInterval = null;
+      turnOffLED(); // Apagar el LED por defecto
+    }
+  </script>
+</body>
+</html>
