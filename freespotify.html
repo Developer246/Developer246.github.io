@@ -2,74 +2,79 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Spotify Funcional con Reproducción</title>
+    <title>Spotify</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #000000; /* Fondo negro */
-            color: #fff; /* Texto blanco para contraste */
+            color: #fff; /* Texto blanco */
         }
         header {
-            background-color: #000000; /* Fondo negro */
+            background-color: #1DB954;
             padding: 20px;
             text-align: center;
-            border-bottom: 1px solid #fff; /* Línea blanca para separación */
+            border-bottom: 1px solid #fff; /* Línea blanca */
         }
-        .search {
-            margin: 20px;
-            text-align: center;
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #000;
+            border-bottom: 1px solid #fff;
         }
-        .search input {
-            padding: 15px;
-            width: 80%;
-            max-width: 600px;
+        .navbar input {
+            padding: 10px;
+            width: 300px;
+            max-width: 100%;
             border: none;
             border-radius: 25px;
             background-color: #333; /* Fondo oscuro */
             color: #fff; /* Texto blanco */
         }
-        .playlist {
-            margin: 20px;
-            padding: 10px;
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
         }
-        .playlist h2 {
+        .content {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h2 {
             border-bottom: 1px solid #fff;
             padding-bottom: 10px;
+            margin-bottom: 20px;
         }
-        .song {
+        .playlist {
             display: flex;
-            align-items: center;
-            margin: 10px 0;
-            padding: 10px;
+            overflow-x: auto;
+        }
+        .playlist .song {
+            margin-right: 20px;
             cursor: pointer;
-            border-radius: 5px;
-            background-color: #000000; /* Fondo negro */
-            border: 1px solid #333; /* Borde oscuro */
         }
-        .song:hover {
-            background-color: #282828;
-        }
-        .song img {
-            width: 50px;
-            height: 50px;
-            margin-right: 15px;
-            border-radius: 5px;
+        .playlist img {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
         }
         .player {
             position: fixed;
             bottom: 0;
             width: 100%;
-            background-color: #000000; /* Fondo negro */
+            background-color: #282828;
+            padding: 20px;
             text-align: center;
-            padding: 10px;
         }
         footer {
             background-color: #000000; /* Fondo negro */
             padding: 10px;
             text-align: center;
-            border-top: 1px solid #fff; /* Línea blanca para separación */
+            border-top: 1px solid #fff; /* Línea blanca */
         }
     </style>
 </head>
@@ -79,22 +84,47 @@
     <h1>Spotify</h1>
 </header>
 
-<div class="search">
-    <input type="text" id="searchInput" placeholder="Buscar..." onkeyup="searchSongs()">
+<div class="navbar">
+    <input type="text" id="searchInput" placeholder="¿Qué quieres reproducir?" onkeyup="searchSongs()">
+    <div>
+        <a href="#">Descubrir Premium</a>
+        <a href="#">Instalar app</a>
+    </div>
 </div>
 
-<div class="playlist">
-    <h2>Lista de Reproducción</h2>
-    <div class="song">Esperando búsqueda...</div>
+<div class="content">
+    <div class="section">
+        <h2>¡Hoy es viernes de novedades!</h2>
+        <div class="playlist" id="novedades">
+            <div class="song">
+                <img src="https://placekitten.com/150/150" alt="Canción 1">
+                <p>Canción 1</p>
+            </div>
+            <!-- Añadir más canciones aquí -->
+        </div>
+    </div>
+    <div class="section">
+        <h2>Canciones que te gustan</h2>
+        <div class="playlist" id="favoritas">
+            <div class="song">
+                <img src="https://placekitten.com/150/150" alt="Canción 2">
+                <p>Canción 2</p>
+            </div>
+            <!-- Añadir más canciones aquí -->
+        </div>
+    </div>
 </div>
 
-<div class="player" id="player"></div>
+<div class="player" id="player">
+    <p>Reproductor de música</p>
+</div>
 
 <footer>
     <p>&copy; 2024 Spotify</p>
 </footer>
 
 <script>
+    // Variables de la API de Spotify (debes reemplazarlas con tus propias credenciales)
     const clientId = 'ea91664cc9b94e25b52d6e5ace683784';
     const clientSecret = '681f0fa866c44022be29355bff67acc2';
     let token;
@@ -114,32 +144,25 @@
 
     async function searchSongs() {
         const input = document.getElementById('searchInput').value;
-        const playlist = document.querySelector('.playlist');
-        playlist.innerHTML = '<h2>Lista de Reproducción</h2>'; // Reset playlist
-
-        if (!input) {
-            playlist.innerHTML += '<div class="song">Esperando búsqueda...</div>';
-            return;
-        }
-
-        if (!token) {
-            await getToken();
-        }
-
+        if (!token) await getToken();
         const result = await fetch(`https://api.spotify.com/v1/search?q=${input}&type=track&limit=10`, {
             method: 'GET',
             headers: { 'Authorization': 'Bearer ' + token }
         });
-
         const data = await result.json();
+        updatePlaylist(data.tracks.items);
+    }
 
-        data.tracks.items.forEach(track => {
+    function updatePlaylist(tracks) {
+        const novedades = document.getElementById('novedades');
+        novedades.innerHTML = '';
+        tracks.forEach(track => {
             const songDiv = document.createElement('div');
             songDiv.className = 'song';
             songDiv.innerHTML = `<img src="${track.album.images[0].url}" alt="${track.name}">
-                                 <div>${track.name} - ${track.artists[0].name}</div>`;
+                                 <p>${track.name}</p>`;
             songDiv.onclick = () => playSong(track.uri);
-            playlist.appendChild(songDiv);
+            novedades.appendChild(songDiv);
         });
     }
 
