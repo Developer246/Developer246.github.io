@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Spotify Funcional con API</title>
+    <title>Spotify Funcional con Reproducción</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,10 +37,7 @@
         }
         .song {
             margin: 10px 0;
-        }
-        .highlight {
-            background-color: yellow;
-            color: black;
+            cursor: pointer;
         }
         footer {
             background-color: #1DB954;
@@ -66,6 +63,8 @@
     <h2>Lista de Reproducción</h2>
     <div class="song">Esperando búsqueda...</div>
 </div>
+
+<div class="player" id="player"></div>
 
 <footer>
     <p>&copy; 2024 Spotify</p>
@@ -114,8 +113,14 @@
             const songDiv = document.createElement('div');
             songDiv.className = 'song';
             songDiv.textContent = `${track.name} - ${track.artists[0].name}`;
+            songDiv.onclick = () => playSong(track.uri);
             playlist.appendChild(songDiv);
         });
+    }
+
+    function playSong(uri) {
+        const player = document.getElementById('player');
+        player.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${uri.split(':').pop()}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
     }
 </script>
 
