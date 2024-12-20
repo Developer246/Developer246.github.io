@@ -16,10 +16,18 @@
             padding: 20px;
             text-align: center;
             border-bottom: 1px solid #fff; /* Línea blanca */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        header img {
+            margin-right: 20px;
+            width: 50px;
+            height: 50px;
         }
         .navbar {
             display: flex;
-            justify-content: space-between;
+            justify-content: center; /* Centrar barra de búsqueda */
             padding: 10px 20px;
             background-color: #000;
             border-bottom: 1px solid #fff;
@@ -76,20 +84,20 @@
             text-align: center;
             border-top: 1px solid #fff; /* Línea blanca */
         }
+        .song-list {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
 <header>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/26/Spotify_logo_with_text.svg" alt="Spotify Logo">
     <h1>Spotify</h1>
 </header>
 
 <div class="navbar">
     <input type="text" id="searchInput" placeholder="¿Qué quieres reproducir?" onkeyup="searchSongs()">
-    <div>
-        <a href="#">Descubrir Premium</a>
-        <a href="#">Instalar app</a>
-    </div>
 </div>
 
 <div class="content">
@@ -113,6 +121,12 @@
             <!-- Añadir más artistas aquí -->
         </div>
     </div>
+    <div class="section song-list" id="song-list">
+        <h2>Canciones del Artista</h2>
+        <div class="playlist" id="artist-songs">
+            <!-- Lista de canciones del artista seleccionada aparecerá aquí -->
+        </div>
+    </div>
 </div>
 
 <div class="player" id="player">
@@ -125,8 +139,8 @@
 
 <script>
     // Variables de la API de Spotify (debes reemplazarlas con tus propias credenciales)
-    const clientId = 'ea91664cc9b94e25b52d6e5ace683784';
-    const clientSecret = '681f0fa866c44022be29355bff67acc2';
+    const clientId = 'TU_CLIENT_ID';
+    const clientSecret = 'TU_CLIENT_SECRET';
     let token;
 
     async function getToken() {
@@ -175,7 +189,31 @@
             artistDiv.className = 'artist';
             artistDiv.innerHTML = `<img src="${artist.images[0] ? artist.images[0].url : 'https://placekitten.com/150/150'}" alt="${artist.name}">
                                    <p>${artist.name}</p>`;
+            artistDiv.onclick = () => showArtistSongs(artist.id);
             artistas.appendChild(artistDiv);
+        });
+    }
+
+    async function showArtistSongs(artistId) {
+        if (!token) await getToken();
+        const result = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`, {
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await result.json();
+        updateArtistSongs(data.tracks);
+    }
+
+    function updateArtistSongs(tracks) {
+        const artistSongs = document.getElementById('artist-songs');
+        artistSongs.innerHTML = '';
+        tracks.forEach(track => {
+            const songDiv = document.createElement('div');
+            songDiv.className = 'song';
+            songDiv.innerHTML = `<img src="${track.album.images[0].url}" alt="${track.name}">
+                                 <p>${track.name}</p>`;
+            songDiv.onclick = () => playSong(track.uri);
+            artistSongs.appendChild(songDiv);
         });
     }
 
