@@ -5,7 +5,7 @@
     <title>Spotify Funcional con Reproducción</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #121212;
@@ -13,7 +13,7 @@
         }
         header {
             background-color: #1DB954;
-            padding: 10px;
+            padding: 20px;
             text-align: center;
         }
         .search {
@@ -21,11 +21,11 @@
             text-align: center;
         }
         .search input {
-            padding: 10px;
+            padding: 15px;
             width: 80%;
             max-width: 600px;
             border: none;
-            border-radius: 20px;
+            border-radius: 25px;
         }
         .playlist {
             margin: 20px;
@@ -36,8 +36,29 @@
             padding-bottom: 10px;
         }
         .song {
+            display: flex;
+            align-items: center;
             margin: 10px 0;
+            padding: 10px;
             cursor: pointer;
+            border-radius: 5px;
+        }
+        .song:hover {
+            background-color: #282828;
+        }
+        .song img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+        .player {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #282828;
+            text-align: center;
+            padding: 10px;
         }
         footer {
             background-color: #1DB954;
@@ -112,7 +133,8 @@
         data.tracks.items.forEach(track => {
             const songDiv = document.createElement('div');
             songDiv.className = 'song';
-            songDiv.textContent = `${track.name} - ${track.artists[0].name}`;
+            songDiv.innerHTML = `<img src="${track.album.images[0].url}" alt="${track.name}">
+                                 <div>${track.name} - ${track.artists[0].name}</div>`;
             songDiv.onclick = () => playSong(track.uri);
             playlist.appendChild(songDiv);
         });
@@ -120,7 +142,7 @@
 
     function playSong(uri) {
         const player = document.getElementById('player');
-        player.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${uri.split(':').pop()}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+        player.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${uri.split(':').pop()}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
     }
 </script>
 
