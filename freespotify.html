@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Spotify Funcional con API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #fff;
+        }
+        header {
+            background-color: #1DB954;
+            padding: 10px;
+            text-align: center;
+        }
+        .search {
+            margin: 20px;
+            text-align: center;
+        }
+        .search input {
+            padding: 10px;
+            width: 80%;
+            max-width: 600px;
+            border: none;
+            border-radius: 20px;
+        }
+        .playlist {
+            margin: 20px;
+            padding: 10px;
+        }
+        .playlist h2 {
+            border-bottom: 1px solid #fff;
+            padding-bottom: 10px;
+        }
+        .song {
+            margin: 10px 0;
+        }
+        .highlight {
+            background-color: yellow;
+            color: black;
+        }
+        footer {
+            background-color: #1DB954;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Spotify</h1>
+</header>
+
+<div class="search">
+    <input type="text" id="searchInput" placeholder="Buscar..." onkeyup="searchSongs()">
+</div>
+
+<div class="playlist">
+    <h2>Lista de Reproducción</h2>
+    <div class="song">Esperando búsqueda...</div>
+</div>
+
+<footer>
+    <p>&copy; 2024 Spotify</p>
+</footer>
+
+<script>
+    const clientId = 'TU_CLIENT_ID';
+    const clientSecret = 'TU_CLIENT_SECRET';
+    let token;
+
+    async function getToken() {
+        const result = await fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Basic ' + btoa(clientId + ':' + clientSecret)
+            },
+            body: 'grant_type=client_credentials'
+        });
+        const data = await result.json();
+        token = data.access_token;
+    }
+
+    async function searchSongs() {
+        const input = document.getElementById('searchInput').value;
+        const playlist = document.querySelector('.playlist');
+        playlist.innerHTML = '<h2>Lista de Reproducción</h2>'; // Reset playlist
+
+        if (!input) {
+            playlist.innerHTML += '<div class="song">Esperando búsqueda...</div>';
+            return;
+        }
+
+        if (!token) {
+            await getToken();
+        }
+
+        const result = await fetch(`https://api.spotify.com/v1/search?q=${input}&type=track&limit=10`, {
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        const data = await result.json();
+
+        data.tracks.items.forEach(track => {
+            const songDiv = document.createElement('div');
+            songDiv.className = 'song';
+            songDiv.textContent = `${track.name} - ${track.artists[0].name}`;
+            playlist.appendChild(songDiv);
+        });
+    }
+</script>
+
+</body>
+</html>
