@@ -49,15 +49,15 @@
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
-        .playlist {
+        .playlist, .artists {
             display: flex;
             overflow-x: auto;
         }
-        .playlist .song {
+        .playlist .song, .artists .artist {
             margin-right: 20px;
             cursor: pointer;
         }
-        .playlist img {
+        .playlist img, .artists img {
             width: 150px;
             height: 150px;
             border-radius: 10px;
@@ -104,13 +104,13 @@
         </div>
     </div>
     <div class="section">
-        <h2>Canciones que te gustan</h2>
-        <div class="playlist" id="favoritas">
-            <div class="song">
-                <img src="https://placekitten.com/150/150" alt="Canción 2">
-                <p>Canción 2</p>
+        <h2>Artistas Populares</h2>
+        <div class="artists" id="artistas">
+            <div class="artist">
+                <img src="https://placekitten.com/150/150" alt="Artista 1">
+                <p>Artista 1</p>
             </div>
-            <!-- Añadir más canciones aquí -->
+            <!-- Añadir más artistas aquí -->
         </div>
     </div>
 </div>
@@ -145,12 +145,13 @@
     async function searchSongs() {
         const input = document.getElementById('searchInput').value;
         if (!token) await getToken();
-        const result = await fetch(`https://api.spotify.com/v1/search?q=${input}&type=track&limit=10`, {
+        const result = await fetch(`https://api.spotify.com/v1/search?q=${input}&type=track,artist&limit=10`, {
             method: 'GET',
             headers: { 'Authorization': 'Bearer ' + token }
         });
         const data = await result.json();
         updatePlaylist(data.tracks.items);
+        updateArtists(data.artists.items);
     }
 
     function updatePlaylist(tracks) {
@@ -163,6 +164,18 @@
                                  <p>${track.name}</p>`;
             songDiv.onclick = () => playSong(track.uri);
             novedades.appendChild(songDiv);
+        });
+    }
+
+    function updateArtists(artists) {
+        const artistas = document.getElementById('artistas');
+        artistas.innerHTML = '';
+        artists.forEach(artist => {
+            const artistDiv = document.createElement('div');
+            artistDiv.className = 'artist';
+            artistDiv.innerHTML = `<img src="${artist.images[0] ? artist.images[0].url : 'https://placekitten.com/150/150'}" alt="${artist.name}">
+                                   <p>${artist.name}</p>`;
+            artistas.appendChild(artistDiv);
         });
     }
 
