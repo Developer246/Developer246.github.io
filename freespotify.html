@@ -74,12 +74,13 @@
             position: fixed;
             bottom: 0;
             width: 100%;
-            background-color: #282828;
+            background-color: #282828; /* Color inicial del reproductor */
             padding: 20px;
             text-align: center;
+            transition: background-color 0.5s ease; /* Transición suave */
         }
         footer {
-            background-color: #000000; /* Fondo negro */
+            background-color: #282828; /* Fondo del reproductor de Spotify */
             padding: 10px;
             text-align: center;
             border-top: 1px solid #fff; /* Línea blanca */
@@ -176,7 +177,7 @@
             songDiv.className = 'song';
             songDiv.innerHTML = `<img src="${track.album.images[0].url}" alt="${track.name}">
                                  <p>${track.name}</p>`;
-            songDiv.onclick = () => playSong(track.uri);
+            songDiv.onclick = () => playSong(track.uri, track.album.images[0].url);
             novedades.appendChild(songDiv);
         });
     }
@@ -196,32 +197,52 @@
 
     async function showArtistSongs(artistId) {
         if (!token) await getToken();
-        const result = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`, {
+        const result = await fetch(`https://api.spotify.com/v1/artists/${artistId}/albums`, {
             method: 'GET',
             headers: { 'Authorization': 'Bearer ' + token }
         });
         const data = await result.json();
-        updateArtistSongs(data.tracks);
+        updateArtistAlbums(data.items);
     }
 
-    function updateArtistSongs(tracks) {
+    async function updateArtistAlbums(albums) {
         const artistSongs = document.getElementById('artist-songs');
         artistSongs.innerHTML = '';
-        tracks.forEach(track => {
-            const songDiv = document.createElement('div');
-            songDiv.className = 'song';
-            songDiv.innerHTML = `<img src="${track.album.images[0].url}" alt="${track.name}">
-                                 <p>${track.name}</p>`;
-            songDiv.onclick = () => playSong(track.uri);
-            artistSongs.appendChild(songDiv);
+        for (const album of albums) {
+            const result = await fetch(`https://api.spotify.com/v1/albums/${album.id}/tracks`, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await result.json();
+            data.items.forEach(track => {
+                const songDiv = document.createElement('div');
+                songDiv.className = 'song';
+                songDiv.innerHTML = `<img src="${album.images[0].url}" alt="${track.name}">
+                                     <p>${track.name}</p>`;
+                songDiv.onclick = () => playSong(track.uri, album.images[0].url);
+                artistSongs.appendChild(songDiv);
+            });
+        }
+    }
+
+    function playSong(uri, albumImageUrl) {
+        const player = document.getElementById('player');
+        player.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${uri.split(':').pop()}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+        
+        // Cambiar el color del fondo del reproductor
+        fetchDominantColor(albumImageUrl).then(color => {
+            player.style.backgroundColor = color;
+            document.querySelector('footer').style.backgroundColor = color;
         });
     }
 
-    function playSong(uri) {
-        const player = document.getElementById('player');
-        player.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${uri.split(':').pop()}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+    async function fetchDominantColor(imageUrl) {
+        // Aquí iría el código para obtener el color dominante de la imagen
+        // Por simplicidad, retornaremos un color fijo
+        return "#6a0dad"; // Cambia esto por el color que prefieras
     }
 </script>
 
 </body>
 </html>
+
